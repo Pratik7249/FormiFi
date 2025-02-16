@@ -7,39 +7,43 @@ export const submitForm = async (formId: number, formData: any) => {
         const user = await currentUser();
 
         if (!user) {
-            return { success: false, message: "User not found" }
+            console.log("No user found"); // Log the issue for debugging
+            return { success: false, message: "User not found" };
         }
+
         if (!formId) {
-            return { success: false, message: "Form id not found" }
+            return { success: false, message: "Form id not found" };
         }
+
         const form = await prisma.form.findUnique({
-            where: {
-                id: formId
-            }
+            where: { id: formId }
         });
+
         if (!form) {
-            return { success: false, message: "form not found" }
+            return { success: false, message: "Form not found" };
         }
+
+        const content = typeof formData === 'object' ? JSON.stringify(formData) : formData;
+
         await prisma.submissions.create({
             data: {
                 formId,
-                content: formData
+                content,
             }
         });
 
         await prisma.form.update({
-            where: {
-                id: formId
-            },
+            where: { id: formId },
             data: {
                 submissions: {
                     increment: 1
                 }
             }
-
         });
-        return { success: true, message: "Form submitted successsfully." }
+
+        return { success: true, message: "Form submitted successfully." };
     } catch (error) {
-        console.log(error);
+        console.error("Error during form submission:", error);
+        return { success: false, message: "An error occurred while submitting the form." };
     }
-}
+};

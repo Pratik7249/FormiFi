@@ -47,7 +47,7 @@ const Edit = () => {
       <CardHeader>
         <CardTitle>
           <h1 className="font-bold text-2xl text-center">
-            {form.content?.formTitle || "NA"}
+            {form.content?.formTitle}
           </h1>
         </CardTitle>
       </CardHeader>

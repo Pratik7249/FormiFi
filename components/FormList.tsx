@@ -33,7 +33,8 @@ const FormList: React.FC<Props> = ({ form }) => {
       }
 
   }
- 
+//  console.log("my formmmmmm",form);
+
   return (
     <div>
       <Card className="w-[350px]">

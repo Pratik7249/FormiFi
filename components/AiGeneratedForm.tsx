@@ -1,15 +1,15 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "./ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import toast from "react-hot-toast";
 import { submitForm } from "@/actions/submitForm";
+import { publishForm } from "@/actions/publishForm";
+import FormPublishDialog from "./FormPublishDialog";
 
 // Define TypeScript Props
 interface FormField {
@@ -17,7 +17,6 @@ interface FormField {
   type: string;
   required?: boolean;
   placeholder?: string;
-  options?: string[]; // For select, radio, checkbox
 }
 
 interface FormProps {
@@ -26,146 +25,144 @@ interface FormProps {
     content: {
       formTitle: string;
       fields?: FormField[];
+      button?: {
+        label?: string;
+        text?: string;
+      };
     };
   };
   isEditMode?: boolean;
 }
 
 const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const { isSignedIn } = useUser();
 
+  if (!isSignedIn) {
+    const redirectTo = window.location.href; // Get the current page URL
+    return (
+      <div className="flex justify-center items-center flex-col">
+        <h2>Please sign in or sign up to access the form</h2>
+        <Button onClick={() => (window.location.href = `/sign-in?redirectUrl=${encodeURIComponent(redirectTo)}`)}>
+          Sign In
+        </Button>
+        <Button onClick={() => (window.location.href = `/sign-up?redirectUrl=${encodeURIComponent(redirectTo)}`)}>
+          Sign Up
+        </Button>
+      </div>
+    );
+  }
+
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
+
+  // Handle text & textarea input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+  // Handle file input changes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: files[0], // Store actual file
+      }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
 
-    Object.keys(formData).forEach((key) => {
-      if (formData[key] instanceof File) {
-        formDataToSend.append(key, formData[key]);
+    try {
+      const formDataToSend = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formDataToSend.append(key, value);
+        } else {
+          formDataToSend.append(key, value.toString());
+        }
+      });
+
+      // Debugging: Check if form data is correctly collected
+      console.log("Submitting form data:", Object.fromEntries(formDataToSend.entries()));
+
+      const data = await submitForm(form.id, formDataToSend);
+
+      console.log("Form submission response:", data);
+
+      if (data?.success) {
+        toast.success(data.message ?? "Form submitted successfully!");
+        setFormData({});
       } else {
-        formDataToSend.append(key, formData[key]);
+        toast.error(data?.message ?? "Error occurred during form submission.");
       }
-    });
+    } catch (error) {
+      toast.error("An unexpected error occurred during form submission.");
+      console.error(error);
+    }
+  };
 
-    const formId = form.id; // Dynamically pass the form ID
+  const handlePublish = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const data = await submitForm(formId, formDataToSend);
+    if (isEditMode) {
+      try {
+        const response = await publishForm(form.id);
 
-    if (data?.success) {
-      toast.success(data.message);
-      setFormData({});
-    } else {
-      toast.error(data?.message);
+        if (response?.success) {
+          setSuccessDialogOpen(true);
+          toast.success("Form published successfully!");
+        } else {
+          toast.error(response?.message ?? "Failed to publish form.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while publishing the form.");
+        console.error(error);
+      }
     }
   };
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">{form.content.formTitle || "Job Application Form"}</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 className="text-lg font-semibold mb-4">{form.content.formTitle || "Your Form"}</h2>
+      <form onSubmit={isEditMode ? handlePublish : handleSubmit}>
         {form.content.fields?.map((field, index) => (
           <div key={index} className="mb-4">
-            {/* Render other input fields */}
-            <Label>{field.label}</Label>
+            <Label htmlFor={field.label + index}>{field.label}</Label>
 
-            {field.type === "text" || field.type === "email" || field.type === "tel" || field.type === "number" || field.type === "date" ? (
+            {["text", "email", "tel", "number", "date"].includes(field.type) ? (
               <Input
+                id={field.label + index}
                 type={field.type}
-                name={field.label}
+                name={field.label + index} // Ensure name is unique
                 placeholder={field.placeholder}
                 required={field.required}
                 onChange={handleChange}
               />
             ) : field.type === "textarea" ? (
               <Textarea
-                name={field.label}
+                id={field.label + index}
+                name={field.label + index} // Ensure name is unique
                 placeholder={field.placeholder}
                 required={field.required}
                 onChange={handleChange}
               />
-            ) : field.type === "checkbox" ? (
-              <div className="flex flex-col space-y-2">
-                {field.options?.map((option, idx) => (
-                  <div key={idx} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`${field.label}-${idx}`}
-                      onCheckedChange={(checked) =>
-                        setFormData({
-                          ...formData,
-                          [field.label]: checked
-                            ? [...(formData[field.label] || []), option]
-                            : formData[field.label]?.filter((o: string) => o !== option),
-                        })
-                      }
-                    />
-                    <Label htmlFor={`${field.label}-${idx}`}>{option}</Label>
-                  </div>
-                ))}
-              </div>
+            ) : field.type === "file" ? (
+              <Input id={field.label + index} type="file" name={field.label + index} onChange={handleFileChange} />
             ) : null}
           </div>
         ))}
 
-        {/* Position Applied For */}
-        <div className="mb-4">
-          <Label>Position Applied For</Label>
-          <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, "Position Applied For": value }))}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a position" />
-            </SelectTrigger>
-            <SelectContent>
-              {["Software Engineer", "Data Analyst", "Product Manager", "Marketing Specialist"].map((option, idx) => (
-                <SelectItem key={idx} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Resume and Cover Letter Fields */}
-        {["Resume", "Cover Letter"].map((label, idx) => (
-          <div key={idx} className="mb-4">
-            <Label>{label}</Label>
-            <Input type="file" name={label} onChange={handleFileChange} />
-          </div>
-        ))}
-
-        {/* Experience Level */}
-        <div className="mb-4">
-          <Label>Experience Level</Label>
-          <RadioGroup
-            value={formData["Experience Level"] || ""}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, "Experience Level": value }))}
-            className="flex flex-col space-y-2"
-          >
-            {["Entry Level", "Mid Level", "Senior Level"].map((option, idx) => (
-              <div key={idx} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`experience-${idx}`} className="peer hidden" />
-                <Label htmlFor={`experience-${idx}`} className="cursor-pointer flex items-center space-x-2">
-                  <div className="w-4 h-4 border border-gray-400 rounded-full flex items-center justify-center peer-checked:border-blue-600">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full peer-checked:block hidden"></div>
-                  </div>
-                  <span>{option}</span>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-
-        {/* Submit Button */}
-        <Button type="submit">{isEditMode ? "Save Changes" : "Submit"}</Button>
+        <Button type="submit">{isEditMode ? "Publish" : "Submit"}</Button>
       </form>
+
+      <FormPublishDialog formId={form.id} open={successDialogOpen} onOpenChange={setSuccessDialogOpen} />
     </div>
   );
 };

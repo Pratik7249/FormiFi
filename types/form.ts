@@ -4,6 +4,7 @@ export type Fields = {
     placeholder?:string;
 }
 export type Content = { 
+    formName:string;
     formTitle:string;
     formFields:Fields[]
 }
