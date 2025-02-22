@@ -35,7 +35,10 @@ interface FormProps {
 }
 
 const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
+  // ✅ Ensure hooks are always called first
   const { isSignedIn } = useUser();
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
 
   if (!isSignedIn) {
     const redirectTo = window.location.href; // Get the current page URL
@@ -51,9 +54,6 @@ const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
       </div>
     );
   }
-
-  const [formData, setFormData] = useState<Record<string, any>>({});
-  const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
 
   // Handle text & textarea input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -75,6 +75,7 @@ const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -89,7 +90,6 @@ const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
         }
       });
 
-      // Debugging: Check if form data is correctly collected
       console.log("Submitting form data:", Object.fromEntries(formDataToSend.entries()));
 
       const data = await submitForm(form.id, formDataToSend);
@@ -108,30 +108,38 @@ const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
     }
   };
 
-  const handlePublish = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle form publishing (for edit mode)
+  const handlePublish = async () => {
+    if (!isEditMode) {
+      console.warn("Publish action ignored: Not in edit mode.");
+      return;
+    }
 
-    if (isEditMode) {
-      try {
-        const response = await publishForm(form.id);
+    console.log("Publishing form...");
 
-        if (response?.success) {
-          setSuccessDialogOpen(true);
-          toast.success("Form published successfully!");
-        } else {
-          toast.error(response?.message ?? "Failed to publish form.");
-        }
-      } catch (error) {
-        toast.error("An error occurred while publishing the form.");
-        console.error(error);
+    try {
+      const response = await publishForm(form.id);
+      console.log("Publish Response:", response);
+
+      if (response?.success) {
+        setSuccessDialogOpen(true);
+        toast.success("Form published successfully!");
+      } else {
+        toast.error(response?.message ?? "Failed to publish form.");
       }
+    } catch (error) {
+      toast.error("An error occurred while publishing the form.");
+      console.error("Publish error:", error);
     }
   };
+
+
 
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4">{form.content.formTitle || "Your Form"}</h2>
-      <form onSubmit={isEditMode ? handlePublish : handleSubmit}>
+
+      <form onSubmit={handleSubmit}>
         {form.content.fields?.map((field, index) => (
           <div key={index} className="mb-4">
             <Label htmlFor={field.label + index}>{field.label}</Label>
@@ -159,12 +167,21 @@ const AiGeneratedForm: React.FC<FormProps> = ({ form, isEditMode = false }) => {
           </div>
         ))}
 
-        <Button type="submit">{isEditMode ? "Publish" : "Submit"}</Button>
+        {!isEditMode && <Button type="submit">Submit</Button>}
       </form>
+
+      {/* Separate Publish Button */}
+      {isEditMode && (
+  <Button type="button" onClick={handlePublish} className="mt-4">
+    Publish Form
+  </Button>
+)}
+
 
       <FormPublishDialog formId={form.id} open={successDialogOpen} onOpenChange={setSuccessDialogOpen} />
     </div>
   );
+
 };
 
 export default AiGeneratedForm;

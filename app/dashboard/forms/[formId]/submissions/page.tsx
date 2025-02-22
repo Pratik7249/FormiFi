@@ -1,35 +1,62 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
 import SubmissionsDetails from "@/components/SubmissionsDetails";
-import prisma from "@/lib/prisma";
-import React from "react";
 
-const Submissions = async ({ params }: { params: { formId: string } }) => {
-  const formId = parseInt(params.formId, 10); // ✅ No need to await params
+interface Submission {
+  id: number;
+  formId: number;
+  data: Record<string, any>;
+  createdAt: string;
+}
 
-  if (isNaN(formId)) {
-    return <h1>Invalid form ID: {params.formId}</h1>;
-  }
+const Submissions = () => {
+  const params = useParams();
+  console.log("useParams result:", params); // ✅ Debugging
 
-  try {
-    const submissions = await prisma.submissions.findMany({
-      where: { formId },
-      include: { form: true },
-    });
+  const formId = params?.formId ? Number(params.formId) : NaN; // ✅ Convert safely
+  console.log("Extracted formId:", formId); // ✅ Debugging
 
-    if (!submissions.length) {
-      return <h1>No submissions found for form ID {formId}</h1>;
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isNaN(formId)) {
+      console.log(`Fetching submissions for formId: ${formId}`); // ✅ Debugging log
+
+      axios
+        .get(`/api/submissions/${formId}`)
+        .then((res) => {
+          console.log("API Response:", res.data);
+          if (res.data.success === false) {
+            throw new Error(res.data.message);
+          }
+          setSubmissions(res.data);
+        })
+        .catch((err) => {
+          console.error("Error loading submissions:", err);
+          setError(err.response?.data?.message || "Failed to load submissions.");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      console.error("Invalid formId detected in frontend:", formId);
     }
+  }, [formId]);
 
-    return (
-      <div>
-        {submissions.map((submission, index) => (
-          <SubmissionsDetails key={submission.id} submission={submission} index={index} />
-        ))}
-      </div>
-    );
-  } catch (error) {
-    console.error("Error fetching submissions:", error);
-    return <h1>Failed to load submissions. Please try again later.</h1>;
-  }
+  if (isNaN(formId)) return <h1>Invalid form ID</h1>;
+  if (loading) return <h1>Loading submissions...</h1>;
+  if (error) return <h1>{error}</h1>;
+  if (!submissions.length) return <h1>No submissions found</h1>;
+
+  return (
+    <div>
+      {submissions.map((submission, index) => (
+        <SubmissionsDetails key={submission.id} submission={submission} index={index} />
+      ))}
+    </div>
+  );
 };
 
 export default Submissions;
