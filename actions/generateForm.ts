@@ -7,145 +7,105 @@ import { revalidatePath } from "next/cache";
 
 const OLLAMA_API_URL = "http://localhost:11434/api/generate";
 
-// Function to clean and parse JSON from response
+// Function to clean and extract JSON from response
 const extractJson = (responseText: string) => {
   try {
-    console.log("🔍 Raw AI Response:", responseText); // Log raw response for debugging
+    console.log("🔍 Raw AI Response:", responseText);
 
-    // Extract only the JSON portion
-    let jsonString = responseText.replace(/```json\n|\n```/g, "").trim();
+    // Extract JSON part using regex to find first `{` and last `}`
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found in response");
+
+    let jsonString = jsonMatch[0];
+
+    // Remove comments (both // and #)
+    jsonString = jsonString.replace(/\/\/.*|#.*$/gm, "").trim();
+
+    // Fix incorrect quotes: Replace any curly or single quotes with proper double quotes
+    jsonString = jsonString
+      .replace(/[“”]/g, '"') // Convert curly double quotes to standard quotes
+      .replace(/[‘’]/g, "'") // Convert curly single quotes to standard single quotes
+      .replace(/'/g, '"'); // Ensure single quotes are replaced with double quotes for JSON
+
+    console.log("📝 Extracted & Cleaned JSON:", jsonString);
 
     // Parse JSON
     const parsedData = JSON.parse(jsonString);
+    console.log("✅ Successfully Parsed JSON:", parsedData);
 
-    // Ensure it matches the expected format
-    if (
-      parsedData &&
-      typeof parsedData === "object" &&
-      parsedData.title &&
-      parsedData.fields &&
-      parsedData.button
-    ) {
-      return parsedData;
-    } else {
-      throw new Error("Parsed JSON does not match expected structure.");
-    }
+    return parsedData;
   } catch (error) {
-    console.error("❌ JSON Parsing Error:", error);
+    console.error("❌ JSON Parsing Error:", error, "Response Text:", responseText);
     return null;
   }
 };
 
+
+
+
 export const generateForm = async (_prevState: unknown, formData: FormData) => {
   try {
-    // Ensure user is authenticated
     const user = await currentUser();
-    if (!user || !user.id) {
-      return { success: false, message: "User authentication failed." };
-    }
+    if (!user || !user.id) return { success: false, message: "User authentication failed." };
 
-    // Validate form data
     const descriptionRaw = formData.get("description");
-    if (!descriptionRaw) {
-      return { success: false, message: "Description is missing from form data." };
-    }
+    if (!descriptionRaw) return { success: false, message: "Description is missing from form data." };
+
     const description = descriptionRaw.toString().trim();
-
-    const schema = z.object({
-      description: z.string().min(1, "Description required"),
-    });
-
+    const schema = z.object({ description: z.string().min(1, "Description required") });
     const result = schema.safeParse({ description });
 
     if (!result.success) {
-      return {
-        success: false,
-        message: "Invalid form data",
-        error: result.error.errors,
-      };
+      return { success: false, message: "Invalid form data", error: result.error.errors };
     }
 
-    // AI prompt for form generation
-    const prompt = `Generate a structured form in JSON format based on the following description:
-    ---
-    Description: "${description}"
-    ---
-    Respond with RAW JSON ONLY, without markdown (\`\`\`json or \`\`\`). 
-    The expected format is:
-    {
-      "title": "Job Application Form",
-      "fields": [
-        {
-          "label": "Name",
-          "type": "text",
-          "required": true
-        }
-      ],
-      "button": {
-        "label": "Submit"
-      }
-    }`;
+    // 🚀 **Updated Prompt (Forcing Valid JSON Format)**
+    const prompt = `Generate a valid JSON object in the exact format below, with NO extra text, NO explanations, and NO markdown:
 
-    console.log("📤 Sending request to Ollama...");
+{
+  "title": "Form Title",
+  "button": { "label": "Submit" },
+  "fields": [
+    { "label": "Name", "type": "text", "required": true }
+  ],
+  "form_name": "unique_form_id",
+  "form_title": "Form Title"
+}
 
-    // Fetch response from AI model
-    let responseText;
-    try {
-      const response = await fetch(OLLAMA_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "deepseek-coder",
-          prompt: prompt,
-          stream: false,
-        }),
-      });
+### Rules:
+- **DO NOT include markdown (no \`\`\`json)**
+- **Use only standard double quotes (\\"), NOT curly quotes (“ ”)**
+- **Form name should be a lowercase, URL-safe string (e.g., "leave_application")**
+- **Use more than one field accordingly**
 
-      if (!response.ok) {
-        throw new Error(`Ollama API Error: ${response.status} ${response.statusText}`);
-      }
+**User's Form Description:** "${description}"`;
 
-      const responseData = await response.json();
-      responseText = responseData.response; // Extracting only the response text
-    } catch (error) {
-      console.error("❌ Fetch request failed:", error);
-      return { success: false, message: "Failed to connect to AI model." };
-    }
+    console.log("📤 Sending request to Ollama:", prompt);
 
-    console.log("🔍 Full AI Response:", responseText);
+    const response = await fetch(OLLAMA_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "deepseek-coder", prompt: prompt, stream: false }),
+    });
 
-    // Extract and parse JSON
-    const formJsonData = extractJson(responseText);
-    if (!formJsonData) {
-      return {
-        success: false,
-        message: "Generated form content is not valid JSON.",
-        rawResponse: responseText, // Debugging info
-      };
-    }
+    if (!response.ok) throw new Error(`Ollama API Error: ${response.status} ${response.statusText}`);
+
+    const responseData = await response.json();
+    console.log("🔍 Full API Response:", responseData);
+
+    const formJsonData = extractJson(responseData.response);
+    if (!formJsonData) return { success: false, message: "Invalid JSON response from AI.", rawResponse: responseData.response };
 
     console.log("✅ Successfully Parsed JSON:", formJsonData);
 
-    // Save the form to the database
-    const form = await prisma.form.create({
-      data: {
-        ownerId: user.id,
-        content: JSON.stringify(formJsonData), // Store as string
-      },
-    });
+    // Save form to database
+    const form = await prisma.form.create({ data: { ownerId: user.id, content: JSON.stringify(formJsonData) } });
 
     revalidatePath("/dashboard/forms");
 
-    return {
-      success: true,
-      message: "✅ Form Generated Successfully",
-      data: form,
-    };
+    return { success: true, message: "✅ Form Generated Successfully", data: form };
   } catch (error) {
-    console.error("❌ ERROR generating form:", error);
-    return {
-      success: false,
-      message: "An error occurred while generating the form",
-    };
+    console.error("❌ ERROR:", error);
+    return { success: false, message: "An error occurred while generating the form." };
   }
 };
