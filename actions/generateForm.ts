@@ -34,7 +34,7 @@ const extractJson = (responseText: string): any => {
 
     return parsedJson;
   } catch (error) {
-    console.error("❌ JSON Parsing Error:", error);
+    console.error("❌ JSON Parsing Error:", error, "Response Text:", responseText);
     return null;
   }
 };
@@ -45,14 +45,11 @@ export const generateForm = async (
 ): Promise<{ success: boolean; message: string; data?: any; error?: any; rawResponse?: any }> => {
   try {
     const user = await currentUser();
-    if (!user || !user.id) {
-      return { success: false, message: "User authentication failed." };
-    }
+    if (!user || !user.id) return { success: false, message: "User authentication failed." };
 
     const descriptionRaw = formData.get("description");
-    if (!descriptionRaw) {
-      return { success: false, message: "Description is missing from form data." };
-    }
+    if (!descriptionRaw) return { success: false, message: "Description is missing from form data." };
+
     const description = descriptionRaw.toString().trim();
 
     // Validate input
@@ -111,9 +108,7 @@ Generate a form based on this description: "${description}".
         body: JSON.stringify({ model: "deepseek-coder", prompt: prompt, stream: false }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Ollama API Error: ${response.status} ${response.statusText}`);
-      }
+    if (!response.ok) throw new Error(`Ollama API Error: ${response.status} ${response.statusText}`);
 
       const responseData = await response.json();
       if (!responseData || typeof responseData.response !== "string") {
