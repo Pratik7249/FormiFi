@@ -1,0 +1,155 @@
+[33mcommit 4873092f0cb308bebd27760e3b28badb18b9b76d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sun Feb 23 00:29:28 2025 +0530
+
+    part 11
+
+[33mcommit 81659fb0ad2304f17c891c518bde7966b630899b[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sat Feb 22 23:34:32 2025 +0530
+
+    part 10
+
+[33mcommit 739b4acc32400e5bd68a4f73d29a1302b4d2f864[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sat Feb 22 23:31:40 2025 +0530
+
+    part9
+
+[33mcommit 28717f6d825517a6361f66ee1b936f3aa85268ed[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sat Feb 22 23:26:12 2025 +0530
+
+    part8
+
+[33mcommit 58cb71b91ab3ce156c95f6b2f00f676fef8747f7[m[33m ([m[1;32mtemp-branch[m[33m)[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sat Feb 22 23:15:34 2025 +0530
+
+    part 6
+
+[33mcommit 5d92ec07746296b3edd7b07eb7fee870b1515b44[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Sun Feb 16 16:09:37 2025 +0530
+
+    part 4
+
+[33mcommit 6c9a16aa07a548682d73143a2e0f4bc9986d359e[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Fri Feb 14 22:51:47 2025 +0530
+
+    part 3
+
+[33mcommit 5de9bb98d22bbae42fa207551b1f8c689bd50624[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Fri Feb 14 16:30:30 2025 +0530
+
+    part 2
+
+[33mcommit 6f9af9141698be88307bc293aa3707d3db80a0ee[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Thu Feb 13 19:39:02 2025 +0530
+
+    Initial commit
+
+[33mcommit 13e1699e31e79e457847a4847a9a4675bf1c9462[m
+Author: Pratik <pratiknimbole27@gmail.com>
+Date:   Thu Feb 13 17:02:38 2025 +0530
+
+    Initial commit from Create Next App
+
+[33mcommit c0082f706539beb078ca45ec7d1f9d083f7d2c31[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:43:20 2025 +0530
+
+    Delete tsconfig.json
+
+[33mcommit dc08001e13bd7d18afc9cfef2c28528541aae00b[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:43:08 2025 +0530
+
+    Delete tailwind.config.ts
+
+[33mcommit 1f4e1a95ca402c0e5f5bb6e42e729b957a8c2585[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:42:56 2025 +0530
+
+    Delete postcss.config.mjs
+
+[33mcommit 84ecff8c9b758e43057a2dd62254c803e0adeb40[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:42:46 2025 +0530
+
+    Delete package.json
+
+[33mcommit 124ae7ec40aca5a69a09de05feb7197d581d315a[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:42:30 2025 +0530
+
+    Delete package-lock.json
+
+[33mcommit 1d50e53f3233ba33f7971afbe9b7d4ff86e9d47a[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:42:10 2025 +0530
+
+    Delete next.config.ts
+
+[33mcommit 0338a87b7923ad728847e7d9d5179aff70efd2eb[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:41:59 2025 +0530
+
+    Delete next-env.d.ts
+
+[33mcommit 04bad6c295d584dfde096559f74b7b222c9d595b[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:41:49 2025 +0530
+
+    Delete eslint.config.mjs
+
+[33mcommit 8b0757704ba7721bacfd108983dedb8f0a036634[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:41:32 2025 +0530
+
+    Delete components.json
+
+[33mcommit ad90c5a43ee1f9c906fcc79f5d94fb097624368d[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:41:14 2025 +0530
+
+    Delete README.md
+
+[33mcommit c607b5bec68b27b2f161749b48fd20a1bee7ac4b[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:41:02 2025 +0530
+
+    Delete middleware.ts
+
+[33mcommit ec0be7a35454edad214c3ce8f8caebadae7b5720[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 19:40:19 2025 +0530
+
+    Delete .gitignore
+
+[33mcommit 61b192a37f39fa0b9dbe6b1362ba61b1e3ba2a73[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 15:56:52 2025 +0530
+
+    Create README.md
+
+[33mcommit f4b4a2efb6ba4e9a20fbae3544b68a5ec2a18cfa[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 15:55:09 2025 +0530
+
+    Add files via upload
+
+[33mcommit 49e3d085993daea6222c7fce646306bbc98e3741[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Thu Feb 13 15:36:56 2025 +0530
+
+    Delete README.md
+
+[33mcommit f59b276525309740510def8e6ab2565efde46458[m
+Author: Pratik Nimbole <121812888+Pratik7249@users.noreply.github.com>
+Date:   Sun Feb 2 20:06:28 2025 +0530
+
+    Initial commit

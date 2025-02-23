@@ -2,40 +2,38 @@ import Link from "next/link";
 import React from "react";
 import { Progress } from "./ui/progress";
 import { getForms } from "@/actions/getForms";
-import { getUserSubscription } from "@/actions/userSubscription"; 
+import { getUserSubscription } from "@/actions/userSubscription";
 import { MAX_FREE_FORM } from "@/lib/utils";
 
 type Props = {
-  userId:string | undefined;
-}
+  userId: string | undefined;
+};
 
-const UpgradeButton : React.FC<Props> = async ({userId}) => {
-  const forms = await getForms(); 
+const UpgradeButton: React.FC<Props> = async ({ userId }) => {
+  const formsResponse = await getForms(); // ✅ Use a descriptive variable name
   const isSubscribed = await getUserSubscription(userId!);
 
-  const formsGenerated = forms?.data?.length;
-  const percentage = (formsGenerated! / MAX_FREE_FORM) * 100;
-
+  const formsGenerated = formsResponse?.data?.length ?? 0; // ✅ Prevent potential null/undefined error
+  const percentage = (formsGenerated / MAX_FREE_FORM) * 100;
 
   return (
     <div className="m-3">
       {isSubscribed ? (
         <span className="text-sm">
-          You have a subscription plan, you are eligble to create more forms
+          You have a subscription plan, you are eligible to create more forms
         </span>
       ) : (
         <>
-          <Progress value={percentage}/>
+          <Progress value={percentage} />
           <p>
-            2 out of 3 forms generated.{" "}
+            {formsGenerated} out of {MAX_FREE_FORM} forms generated.{" "}
             <Link
               href={"/dashboard/upgrade"}
               className="text-blue-600 underline"
             >
-              {" "}
-              Upgrade{" "}
+              Upgrade
             </Link>{" "}
-            to generate more forms
+            to generate more forms.
           </p>
         </>
       )}
