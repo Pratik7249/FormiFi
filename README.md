@@ -9,7 +9,6 @@ Formifi is a **SaaS platform** that enables users to **generate and publish form
 - 📤 **Form Sharing** – Publish and distribute forms via unique links.
 - 📊 **Response Collection** – Store and manage responses securely.
 - 🔐 **Authentication** – Secure login & registration.
-- 🌙 **Dark Mode** – Toggle between light and dark themes.
 - 💳 **Payments** – Integrated with **Stripe** for premium features.
 
 ### **Admin Features**
