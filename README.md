@@ -37,15 +37,7 @@ Formifi is a **SaaS platform** that enables users to **generate and publish form
 ## Project Structure
 
 ```project-directory
-├── prisma            # Prisma schema and migrations
-├── src
-│   ├── components   # Reusable UI components
-│   ├── pages        # Next.js pages (Home, Dashboard, Form Builder)
-│   ├── server       # API routes and handlers
-│   ├── utils        # Helper functions
-│   ├── store        # State management
-│   └── app.tsx      # Main Next.js app
-└── README.md        # Project documentation
+Formifi/ ├── .next/ # Next.js build files ├── .vscode/ # VSCode workspace settings ├── actions/ # Server actions for form handling ├── app/ # Main Next.js app directory ├── components/ # Reusable UI components ├── hooks/ # Custom React hooks ├── lib/ # Utility functions and helpers ├── node_modules/ # Installed dependencies ├── prisma/ # Prisma schema and migrations ├── public/ # Static assets (logos, images, etc.) ├── types/ # TypeScript types └── README.md # Project documentation
 ```
 ## Installation
 
