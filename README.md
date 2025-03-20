@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Formifi - AI-Powered Form Generation SaaS
 
-## Getting Started
+Formifi is a **SaaS platform** that enables users to **generate and publish forms** using the **DeepSeek-Coder** model. It allows for seamless **form sharing** and **response collection**, providing a modern and efficient user experience.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### **User Features**
+- ✅ **Form Creation** – Generate forms dynamically with AI.
+- 📤 **Form Sharing** – Publish and distribute forms via unique links.
+- 📊 **Response Collection** – Store and manage responses securely.
+- 🔐 **Authentication** – Secure login & registration.
+- 🌙 **Dark Mode** – Toggle between light and dark themes.
+- 💳 **Payments** – Integrated with **Stripe** for premium features.
+
+### **Admin Features**
+- 📊 **Admin Dashboard** – Manage users, forms, and responses.
+- 🔑 **Role-Based Access** – Middleware for restricted admin pages.
+- 🚀 **Toast Notifications** – Real-time feedback for user actions.
+
+---
+
+## Tech Stack
+
+### **Frontend**
+- ⚛️ **Next.js** – Modern React framework.
+- 🎨 **ShadCN UI** – Stylish UI components (**Button, Input, Card, Badge**).
+- ⚡ **Radix UI** – Accessible UI components.
+- 🔔 **Sonner** – Toast notifications.
+
+### **Backend**
+- 🖥 **Node.js & Express** – Server-side logic.
+- 📦 **Prisma & PostgreSQL** – Database ORM and management.
+- 🤖 **DeepSeek-Coder** – AI model for form generation.
+
+---
+
+## Project Structure
+
+```project-directory
+├── prisma            # Prisma schema and migrations
+├── src
+│   ├── components   # Reusable UI components
+│   ├── pages        # Next.js pages (Home, Dashboard, Form Builder)
+│   ├── server       # API routes and handlers
+│   ├── utils        # Helper functions
+│   ├── store        # State management
+│   └── app.tsx      # Main Next.js app
+└── README.md        # Project documentation
 ```
+## Installation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Prerequisites
+ - Node.js (v16+ recommended)
+ - PostgreSQL (Local or cloud instance)
+ - Git
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Steps:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/YourUsername/Formifi.git
+    ```
 
-## Learn More
+2. **Install dependencies**:
+    ```bash
+    cd Formifi
+    npm install
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Initialize Prisma**:
+    ```bash
+    npx prisma init
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Configure environment variables**:  
+   Create a `.env` file in the root directory with the following:
+    ```env
+    DATABASE_URL=<your-postgres-url>
+    NEXTAUTH_SECRET=<your-secret-key>
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+### Start the project:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Start the development server**:
+    ```bash
+    npm run dev
+    ```
+2. The app will be available at **[http://localhost:3000](http://localhost:3000)**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Usage
+
+### **For Users**
+- Register or login to generate forms.
+- Customize and share forms.
+- View collected responses.
+
+### **For Admins**
+- Login to the admin dashboard.
+- Manage users and forms.
+- Monitor responses and platform performance.
+
+
+## Contributing
+
+We welcome contributions! To contribute:
+1. Fork the repository.
+2. Create a new branch:
+    ```bash
+    git checkout -b feature/your-feature
+    ```
+3. Commit your changes:
+    ```bash
+    git commit -m "Add your message here"
+    ```
+4. Push to your branch:
+    ```bash
+    git push origin feature/your-feature
+    ```
+5. Open a pull request on GitHub.
