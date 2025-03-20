@@ -85,6 +85,9 @@ Formifi/
     ```env
     DATABASE_URL=<your-postgres-url>
     NEXTAUTH_SECRET=<your-secret-key>
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your-clerk-publishable-key>
+    CLERK_SECRET_KEY=<your-clerk-secret-key>
+    NEXT_PUBLIC_BASE_URL="http://localhost:3000"
     ```
 
 
